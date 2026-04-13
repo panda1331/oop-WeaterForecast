@@ -19,7 +19,7 @@ builder.Services.AddOpenApiDocument(config =>
 });
 builder.Services.AddHttpClient<OpenWeatherDataClient>();
 builder.Services.AddSingleton<IWeatherDataClient, OpenWeatherDataClient>();
-builder.Services.AddSingleton<CurrentWeatherController>();
+builder.Services.AddSingleton<ICurrentWeatherController, CurrentWeatherController>();
 
 var app = builder.Build();
 

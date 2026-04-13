@@ -18,8 +18,7 @@ namespace WeatherForecast.Clients
             try
             {
                 var response = await _client.GetAsync(
-                    $"weather?lat={latitude}&lon={longitude}&appid={_apiKey}&units=metric"
-                );
+                    $"weather?lat={latitude}&lon={longitude}&appid={_apiKey}&units=metric");
 
                 if (!response.IsSuccessStatusCode)
                 {

@@ -2,5 +2,6 @@
   <Folder Name="/Solution Items/">
     <File Path=".env" />
   </Folder>
+  <Project Path="WeatherForecast.Tests/WeatherForecast.Tests.csproj" />
   <Project Path="WeatherForecast/WeatherForecast.csproj" />
 </Solution>

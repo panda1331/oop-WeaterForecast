@@ -24,8 +24,8 @@ namespace WeatherForecast.Api
             return groups;
         }
 
-        private static async Task<Results<Ok<Success<CurrentWeather>>, BadRequest<Status>, InternalServerError<Status>>> 
-            HandleGetCurrentWeather([FromServices] CurrentWeatherController controller,
+        public static async Task<Results<Ok<Success<CurrentWeather>>, BadRequest<Status>, InternalServerError<Status>>> 
+            HandleGetCurrentWeather([FromServices] ICurrentWeatherController controller,
                                         [DefaultValue("18.300231990440125")] string lat,
                                         [DefaultValue("-64.8251590359234")] string lon)
         {
@@ -34,7 +34,7 @@ namespace WeatherForecast.Api
                 var latitude = decimal.Parse(lat, CultureInfo.InvariantCulture);
                 var longitude = decimal.Parse(lon, CultureInfo.InvariantCulture);
 
-                var weather = await controller.GetCurrentWeather(latitude, longitude);
+                var weather = await controller.GetCurrentWeatherAsync(latitude, longitude);
 
                 return TypedResults.Ok(Success.Create(200, "success", weather));
             }
