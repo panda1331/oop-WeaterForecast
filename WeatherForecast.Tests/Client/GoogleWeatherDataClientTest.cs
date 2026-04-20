@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
-using WeatherForecast.Clients;
+using WeatherForecast.Clients.GoogleWeather;
 using Xunit;
 
 namespace WeatherForecast.Tests.Client
@@ -19,8 +19,8 @@ namespace WeatherForecast.Tests.Client
         {
             var settings = new Dictionary<string, string>
             {
-                { "OPENWEATHER_BASE_URL", "https://api.test.com/" },
-                { "OPENWEATHER_API_KEY", "test_api_key" }
+                { "GOOGLE_WEATHER_BASE_URL", "https://api.test.com/" },
+                { "GOOGLE_WEATHER_API_KEY", "test_api_key" }
             };
             _configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(settings)
@@ -52,9 +52,9 @@ namespace WeatherForecast.Tests.Client
         {
             var latitude = 55.7558m;
             var longitude = 37.6173m;
-            var expectedTemp = 22.5m;
+            var expectedTemp = 13.7m;
 
-            var response = "{\"main\": {\"temp\": 22.5}}";
+            var response = "{\"temperature\": {\"degrees\": 13.7}}";
             var client = CreateClient(HttpStatusCode.OK, response);
 
             var result = await client.LocationCurrentTemperature(latitude, longitude);
