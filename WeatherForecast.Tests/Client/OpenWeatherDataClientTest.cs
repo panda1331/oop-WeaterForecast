@@ -121,5 +121,38 @@ namespace WeatherForecast.Tests.Client
                 .ThrowAsync<ApiCallException>()
                 .WithMessage("*failed to call openweather*");
         }
+
+
+        [Fact]
+        public async Task GetForecastAsync_WithValidResponse_ReturnForecast()
+        {
+            var latitude = 55.7558m;
+            var longitude = 37.6173m;
+            var days = 3;
+
+            var jsonResponse = """
+            {
+                "list": [
+                    {
+                        "dt": 1745272800,
+                        "main": { "temp": 15.2, "temp_min": 12.0, "temp_max": 18.5, "humidity": 65 },
+                        "weather": [ { "description": "clear sky" } ],
+                        "wind": { "speed": 4.5 }
+                    },
+                    {
+                        "dt": 1745283600,
+                        "main": { "temp": 14.1, "temp_min": 11.5, "temp_max": 17.8, "humidity": 70 },
+                        "weather": [ { "description": "few clouds" } ],
+                        "wind": { "speed": 5.1 }
+                    }
+                ]
+            }
+            """;
+            var client = CreateClient(HttpStatusCode.OK, jsonResponse);
+            var result = await client.GetForecastAsync(latitude, longitude, days);
+
+            result.Should().NotBeNull();
+            result.Days.Should().NotBeEmpty();
+        }
     }
 }

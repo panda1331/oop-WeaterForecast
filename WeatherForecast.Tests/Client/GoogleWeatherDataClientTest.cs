@@ -118,5 +118,63 @@ namespace WeatherForecast.Tests.Client
                 .ThrowAsync<ApiCallException>()
                 .WithMessage("*failed to call googleweather*");
         }
+
+        [Fact]
+        public async Task GetForecastAsync_WithValidResponse_ReturnForecast()
+        {
+            var latitude = 55.7558m;
+            var longitude = 37.6173m;
+            var days = 3;
+
+            var jsonResponse = """
+            {
+                "forecastDays": [
+                    {
+                        "displayDate": { "year": 2026, "month": 4, "day": 22 },
+                        "maxTemperature": { "degrees": 18.5, "unit": "CELSIUS" },
+                        "minTemperature": { "degrees": 8.2, "unit": "CELSIUS" },
+                        "daytimeForecast": {
+                            "weatherCondition": {
+                                "description": { "text": "Partly cloudy", "languageCode": "en" },
+                                "type": "PARTLY_CLOUDY"
+                            },
+                            "relativeHumidity": 65,
+                            "wind": {
+                                "speed": { "value": 4.5, "unit": "KILOMETERS_PER_HOUR" }
+                            }
+                        }
+                    },
+                    {
+                        "displayDate": { "year": 2026, "month": 4, "day": 23 },
+                        "maxTemperature": { "degrees": 20.1, "unit": "CELSIUS" },
+                        "minTemperature": { "degrees": 10.3, "unit": "CELSIUS" },
+                        "daytimeForecast": {
+                            "weatherCondition": {
+                                "description": { "text": "Sunny", "languageCode": "en" },
+                                "type": "CLEAR"
+                            },
+                            "relativeHumidity": 55,
+                            "wind": {
+                                "speed": { "value": 3.2, "unit": "KILOMETERS_PER_HOUR" }
+                            }
+                        }
+                    }
+                ]
+            }
+            """;
+
+            var client = CreateClient(HttpStatusCode.OK, jsonResponse);
+
+            var result = await client.GetForecastAsync(latitude, longitude, days);
+
+            result.Should().NotBeNull();
+            result.Days.Should().HaveCount(2);
+            result.Days[0].Date.Should().Be(new DateTime(2026, 4, 22));
+            result.Days[0].MaxTemperature.Should().Be(18.5m);
+            result.Days[0].MinTemperature.Should().Be(8.2m);
+            result.Days[0].Condition.Should().Be("Partly cloudy");
+            result.Days[0].Humidity.Should().Be(65);
+            result.Days[0].WindSpeed.Should().Be(4.5m);
+        }
     }
 }

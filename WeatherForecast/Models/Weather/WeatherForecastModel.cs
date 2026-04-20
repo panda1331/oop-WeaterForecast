@@ -1,6 +1,4 @@
 ﻿namespace WeatherForecast.Models.Weather
 {
-    public class WeatherForecast
-    {
-    }
+    public record WeatherForecastModel(string City, List<ForecastDay> Days) {}
 }

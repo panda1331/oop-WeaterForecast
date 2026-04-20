@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using System.Text.Json;
+using WeatherForecast.Models.Weather;
 using WeatherForecast.Utils;
 
 namespace WeatherForecast.Clients.OpenWeather
 {
-    public class OpenWeatherDataClient : IWeatherDataClient
+    public class OpenWeatherDataClient : IWeatherDataClient, IWeatherForecastClient
     {
         private readonly HttpClient _client;
         private readonly string _apiKey;
@@ -14,6 +15,8 @@ namespace WeatherForecast.Clients.OpenWeather
             _client.BaseAddress = new Uri(config.GetValue<string>("OPENWEATHER_BASE_URL") ?? "");
             _apiKey = config.GetValue<string>("OPENWEATHER_API_KEY") ?? "";
         }
+
+
         public async Task<decimal> LocationCurrentTemperature(decimal latitude, decimal longitude)
         {
             try
@@ -38,6 +41,11 @@ namespace WeatherForecast.Clients.OpenWeather
             {
                 throw new ApiCallException("failed to decode response");
             }
+        }
+
+        public Task<WeatherForecastModel> GetForecastAsync(decimal latitude, decimal longitude, int days)
+        {
+            throw new NotImplementedException();
         }
     }
 }

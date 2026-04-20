@@ -1,9 +1,10 @@
 ﻿using System.Text.Json;
+using WeatherForecast.Models.Weather;
 using WeatherForecast.Utils;
 
 namespace WeatherForecast.Clients.GoogleWeather
 {
-    public class GoogleWeatherDataClient : IWeatherDataClient
+    public class GoogleWeatherDataClient : IWeatherDataClient, IWeatherForecastClient
     {
         private readonly HttpClient _httpClient;
         private readonly string _apiKey;
@@ -40,6 +41,11 @@ namespace WeatherForecast.Clients.GoogleWeather
             {
                 throw new ApiCallException($"failed to call googleweather: {e.Message}.", inner: e);
             }
+        }
+
+        public Task<WeatherForecastModel> GetForecastAsync(decimal latitude, decimal longitude, int days)
+        {
+            throw new NotImplementedException();
         }
     }
 }
