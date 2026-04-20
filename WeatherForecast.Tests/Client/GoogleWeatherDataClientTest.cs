@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using WeatherForecast.Clients.GoogleWeather;
+using WeatherForecast.Utils;
 using Xunit;
 
 namespace WeatherForecast.Tests.Client
@@ -46,9 +47,22 @@ namespace WeatherForecast.Tests.Client
             var httpClient = new HttpClient(handlerMock.Object);
             return new GoogleWeatherDataClient(_configuration, httpClient);
         }
+        private GoogleWeatherDataClient CreateClientThatThrows(Exception exception)
+        {
+            var handlerMock = new Mock<HttpMessageHandler>();
+            handlerMock
+                .Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>())
+                .ThrowsAsync(exception);
+            var httpClient = new HttpClient(handlerMock.Object);
+            return new GoogleWeatherDataClient(_configuration, httpClient);
+        }
 
         [Fact]
-        public async Task LocationCurrentTemperature_WithValidResponse_ReturnsTemperature()
+        public async Task LocationCurrentTemperature_WithValidResponse_ReturnTemperature()
         {
             var latitude = 55.7558m;
             var longitude = 37.6173m;
@@ -61,6 +75,48 @@ namespace WeatherForecast.Tests.Client
 
             result.Should()
                 .Be(expectedTemp);
+        }
+
+        [Fact]
+        public async Task LocationCurrentTemperature_WithNotSuccessStatusCode_ThrowsApiCallException()
+        {
+            var latitude = 55.7558m;
+            var longitude = 37.6173m;
+
+            var client = CreateClient(HttpStatusCode.InternalServerError, "");
+            Func<Task> act = async () => await client.LocationCurrentTemperature(latitude, longitude);
+
+            await act.Should()
+                .ThrowAsync<ApiCallException>()
+                .WithMessage("*bad status: 500*");
+        }
+
+        [Fact]
+        public async Task LocationCurrentTemperature_WithInvalidJson_ThrowsApiCallException()
+        {
+            var latitude = 55.7558m;
+            var longitude = 37.6173m;
+
+            var client = CreateClient(HttpStatusCode.OK, "{}");
+            Func<Task> act = async () => await client.LocationCurrentTemperature(latitude, longitude);
+
+            await act.Should()
+                .ThrowAsync<ApiCallException>()
+                .WithMessage("failed to decode response");
+        }
+
+        [Fact]
+        public async Task LocationCurrentTemperature_WithNetworkError_ThrowsApiCallException()
+        {
+            var latitude = 55.7558m;
+            var longitude = 37.6173m;
+
+            var client = CreateClientThatThrows(new HttpRequestException("NetworkTimeout"));
+            Func<Task> act = async () => await client.LocationCurrentTemperature(latitude, longitude);
+
+            await act.Should()
+                .ThrowAsync<ApiCallException>()
+                .WithMessage("*failed to call openweather*");
         }
     }
 }
