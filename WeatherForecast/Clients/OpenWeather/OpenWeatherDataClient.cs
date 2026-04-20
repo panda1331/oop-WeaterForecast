@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using System.Text.Json;
 using WeatherForecast.Utils;
 
-namespace WeatherForecast.Clients
+namespace WeatherForecast.Clients.OpenWeather
 {
     public class OpenWeatherDataClient : IWeatherDataClient
     {
@@ -17,8 +18,7 @@ namespace WeatherForecast.Clients
         {
             try
             {
-                var response = await _client.GetAsync(
-                    $"weather?lat={latitude}&lon={longitude}&appid={_apiKey}&units=metric");
+                var response = await _client.GetAsync($"weather?lat={latitude}&lon={longitude}&appid={_apiKey}&units=metric");
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -28,11 +28,15 @@ namespace WeatherForecast.Clients
                 }
 
                 var data = await response.Content.ReadFromJsonAsync<OpenWeatherResponse>();
-                return data?.Main?.Temp ?? throw new ApiCallException($"failed to decode response");
+                return data?.Main?.Temp ?? throw new ApiCallException("failed to decode response");
             }
             catch (HttpRequestException e)
             {
                 throw new ApiCallException($"failed to call openweather: {e.Message}.", inner: e);
+            }
+            catch(JsonException)
+            {
+                throw new ApiCallException("failed to decode response");
             }
         }
     }

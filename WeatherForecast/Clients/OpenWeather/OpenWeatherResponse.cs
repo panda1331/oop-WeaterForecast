@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components.Authorization;
 using System.Text.Json.Serialization;
 
-namespace WeatherForecast.Clients
+namespace WeatherForecast.Clients.OpenWeather
 {
     public class OpenWeatherResponse
     {

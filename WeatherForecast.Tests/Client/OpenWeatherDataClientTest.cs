@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
-using WeatherForecast.Clients;
+using WeatherForecast.Clients.OpenWeather;
 using WeatherForecast.Utils;
 using Xunit;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
@@ -32,25 +32,6 @@ namespace WeatherForecast.Tests.Client
                 .Build();
         }
 
-        //private Mock<HttpMessageHandler> CreateHttpMessageHandler(HttpStatusCode statusCode, string responseContent)
-        //{
-        //    var httpResponse = new HttpResponseMessage
-        //    {
-        //        StatusCode = statusCode,
-        //        Content = new StringContent(responseContent)
-        //    };
-
-        //    var handlerMock = new Mock<HttpMessageHandler>();
-        //    handlerMock
-        //        .Protected()
-        //        .Setup<Task<HttpResponseMessage>>(
-        //            "SendAsync",
-        //            ItExpr.IsAny<HttpRequestMessage>(),
-        //            ItExpr.IsAny<CancellationToken>())
-        //        .ReturnsAsync(httpResponse);
-
-        //    return handlerMock;
-        //}
         private OpenWeatherDataClient CreateClient(HttpStatusCode statusCode, string responseContent)
         {
             var response = new HttpResponseMessage
@@ -92,7 +73,6 @@ namespace WeatherForecast.Tests.Client
             var expectedTemp = 22.5m;
 
             var response = "{\"main\": {\"temp\": 22.5}}";
-            //var handlerMock = CreateHttpMessageHandler(HttpStatusCode.OK, response);
             var client = CreateClient(HttpStatusCode.OK, response);
             
             var result = await client.LocationCurrentTemperature(latitude, longitude);
@@ -101,7 +81,7 @@ namespace WeatherForecast.Tests.Client
         }
 
         [Fact]
-        public async Task LocationCurrentTemperature_WithNotSucceessStatusCode_ThrowsApiCallException()
+        public async Task LocationCurrentTemperature_WithNotSuccessStatusCode_ThrowsApiCallException()
         {
             var latitude = 55.7558m;
             var longitude = 37.6173m;
@@ -129,7 +109,7 @@ namespace WeatherForecast.Tests.Client
         }
 
         [Fact]
-        public async Task LocationCurrentTemperature_WithNetworkWeather_ThrowsApiCallException()
+        public async Task LocationCurrentTemperature_WithNetworkError_ThrowsApiCallException()
         {
             var latitude = 55.7558m;
             var longitude = 37.6173m;

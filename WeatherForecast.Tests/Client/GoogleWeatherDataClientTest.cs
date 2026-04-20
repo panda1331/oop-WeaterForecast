@@ -116,7 +116,7 @@ namespace WeatherForecast.Tests.Client
 
             await act.Should()
                 .ThrowAsync<ApiCallException>()
-                .WithMessage("*failed to call openweather*");
+                .WithMessage("*failed to call googleweather*");
         }
     }
 }

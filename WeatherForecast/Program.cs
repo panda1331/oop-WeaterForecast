@@ -1,6 +1,7 @@
 using DotEnv.Core;
 using WeatherForecast.Api;
 using WeatherForecast.Clients;
+using WeatherForecast.Clients.OpenWeather;
 using WeatherForecast.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
