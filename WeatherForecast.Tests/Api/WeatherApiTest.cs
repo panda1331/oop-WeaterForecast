@@ -20,11 +20,11 @@ namespace WeatherForecast.Tests.Api
         {
             var latitude = "53.8930";
             var longitude = "27.5674";
-            var excpectedWeather = new CurrentWeather(22.5m);
+            var expectedWeather = new CurrentWeather(22.5m);
             var mockController = new Mock<ICurrentWeatherController>();
             mockController
                 .Setup(c => c.GetCurrentWeatherAsync(It.IsAny<decimal>(), It.IsAny<decimal>()))
-                .ReturnsAsync(excpectedWeather);
+                .ReturnsAsync(expectedWeather);
 
             var result = await WeatherApi.HandleGetCurrentWeather(mockController.Object, latitude, longitude);
 
@@ -49,6 +49,19 @@ namespace WeatherForecast.Tests.Api
         }
 
         [Fact]
+        public async Task HandleGetCurrentWeather_WithOverflowCoordinates_ReturnsBadRequest()
+        {
+            var latitude = "99999999999999999999999999999999999999";
+            var longitude = "14.2345";
+            var mockController = new Mock<ICurrentWeatherController>();
+            var result = await WeatherApi.HandleGetCurrentWeather(mockController.Object, latitude, longitude);
+            var badRequestResult = result.Result.Should().BeOfType<BadRequest<Status>>().Subject;
+            badRequestResult.Value.Should().NotBeNull();
+            badRequestResult.Value!.Code.Should().Be(400);
+            badRequestResult.Value.Message.Should().Be("invalid coordinates");
+        }
+
+        [Fact]
         public async Task HandleGetCurrentWeather_WhenControllerThrowsApiException_ReturnsInternalServerError()
         {
             var latitude = "53.8930";
@@ -63,7 +76,5 @@ namespace WeatherForecast.Tests.Api
             internalServerError.Value!.Code.Should().Be(500);
             internalServerError.Value.Message.Should().Be("API is not available.");
         }
-
-
     }
 }
