@@ -1,8 +1,10 @@
 using DotEnv.Core;
 using WeatherForecast.Api;
 using WeatherForecast.Clients;
+using WeatherForecast.Clients.GoogleWeather;
 using WeatherForecast.Clients.OpenWeather;
 using WeatherForecast.Controllers;
+using WeatherForecast.Factories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +21,8 @@ builder.Services.AddOpenApiDocument(config =>
     config.Version = "v1";
 });
 builder.Services.AddHttpClient<OpenWeatherDataClient>();
-builder.Services.AddSingleton<IWeatherDataClient, OpenWeatherDataClient>();
+builder.Services.AddHttpClient<GoogleWeatherDataClient>();
+builder.Services.AddSingleton<IWeatherProviderFactory, WeatherProviderFactory>();
 builder.Services.AddSingleton<ICurrentWeatherController, CurrentWeatherController>();
 
 var app = builder.Build();

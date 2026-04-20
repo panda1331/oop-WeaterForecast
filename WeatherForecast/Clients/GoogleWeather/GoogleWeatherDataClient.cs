@@ -7,11 +7,12 @@ namespace WeatherForecast.Clients.GoogleWeather
     {
         private readonly HttpClient _httpClient;
         private readonly string _apiKey;
+        private readonly string _baseUrl;
 
         public GoogleWeatherDataClient(IConfiguration configuration, HttpClient httpClient)
         {
             _httpClient = httpClient;
-            _httpClient.BaseAddress = new Uri(configuration.GetValue<string>("GOOGLE_WEATHER_BASE_URL") ?? "");
+            _baseUrl = configuration.GetValue<string>("GOOGLE_WEATHER_BASE_URL") ?? "";
             _apiKey = configuration.GetValue<string>("GOOGLE_WEATHER_API_KEY") ?? "";
         }
 
@@ -19,7 +20,11 @@ namespace WeatherForecast.Clients.GoogleWeather
         {
             try
             {
-                var response = await _httpClient.GetAsync($"currentConditions:lookup?key={_apiKey}&location.latitude={latitude}&location.longitude={longitude}");
+                var latStr = latitude.ToString(System.Globalization.CultureInfo.InvariantCulture);
+                var lonStr = longitude.ToString(System.Globalization.CultureInfo.InvariantCulture);
+                var url = $"{_baseUrl}currentConditions:lookup?key={_apiKey}&location.latitude={latStr}&location.longitude={lonStr}";
+
+                var response = await _httpClient.GetAsync(url);
 
                 if (!response.IsSuccessStatusCode)
                     throw new ApiCallException($"googleweather returned bad status: {(ushort)response.StatusCode}");

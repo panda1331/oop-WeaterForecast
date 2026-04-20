@@ -26,15 +26,17 @@ namespace WeatherForecast.Api
 
         public static async Task<Results<Ok<Success<CurrentWeather>>, BadRequest<Status>, InternalServerError<Status>>> 
             HandleGetCurrentWeather([FromServices] ICurrentWeatherController controller,
-                                        [DefaultValue("18.300231990440125")] string lat,
-                                        [DefaultValue("-64.8251590359234")] string lon)
+                                        string? lat = null,
+                                        string? lon = null,
+                                        string? provider = null)
         {
             try
             {
-                var latitude = decimal.Parse(lat, CultureInfo.InvariantCulture);
-                var longitude = decimal.Parse(lon, CultureInfo.InvariantCulture);
+                var latitude = decimal.Parse(lat ?? "18.300231990440125", CultureInfo.InvariantCulture);
+                var longitude = decimal.Parse(lon ?? "-64.8251590359234", CultureInfo.InvariantCulture);
+                var providerValue = provider ?? "openweather";
 
-                var weather = await controller.GetCurrentWeatherAsync(latitude, longitude);
+                var weather = await controller.GetCurrentWeatherAsync(latitude, longitude, providerValue);
 
                 return TypedResults.Ok(Success.Create(200, "success", weather));
             }
