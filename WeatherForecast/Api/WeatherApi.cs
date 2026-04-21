@@ -21,6 +21,13 @@ namespace WeatherForecast.Api
                .WithTags(["weather"])
                .WithDescription("Returns current weather for given coordinates");
 
+            groups
+                .MapGet("forecast", WeatherApi.HandleGetWeatherForecast)
+                .WithName("GetWeatherForecast")
+                .WithDisplayName("Get Weather Forecast")
+                .WithTags(["weather"])
+                .WithDescription("Returns weather forecast for given coordinates");
+
             return groups;
         }
 
@@ -52,6 +59,16 @@ namespace WeatherForecast.Api
             {
                 return TypedResults.InternalServerError(Status.Create(500, e.Message));
             }
+        }
+
+        public static async Task<Results<Ok<Success<WeatherForecastModel>>, BadRequest<Status>, InternalServerError<Status>>>
+            HandleGetWeatherForecast([FromServices] IForecastController controller,
+                                    string? lat = null,
+                                    string? lon = null,
+                                    string? days = null,
+                                    string? provider = null)
+        {
+            throw new NotImplementedException();
         }
     }
 }
