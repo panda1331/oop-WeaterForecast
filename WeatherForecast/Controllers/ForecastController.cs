@@ -12,9 +12,8 @@ namespace WeatherForecast.Controllers
         }
         public async Task<WeatherForecastModel> GetWeatherForecastAsync(decimal latitude, decimal longitude, int days, string provider = "openweather")
         {
-            //var client = _factory.GetForecastProvider(provider);
-            //return await client.GetForecastAsync(latitude, longitude, days);
-            throw new NotImplementedException();
+            var client = _factory.GetForecastProvider(provider);
+            return await client.GetForecastAsync(latitude, longitude, days);
         }
     }
 }
