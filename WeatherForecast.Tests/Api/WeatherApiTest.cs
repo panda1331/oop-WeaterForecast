@@ -129,7 +129,7 @@ namespace WeatherForecast.Tests.Api
             var mockController = new Mock<IForecastController>();
             mockController
                 .Setup(c => c.GetWeatherForecastAsync(It.IsAny<decimal>(), It.IsAny<decimal>(), It.IsAny<int>(), It.IsAny<string>()))
-                .ThrowsAsync(new ApiCallException("Forecast API is not available."));
+                .ThrowsAsync(new ApiCallException("API is not available."));
 
             var result = await WeatherApi.HandleGetWeatherForecast(mockController.Object, latitude, longitude, days, provider);
             var internalServerError = result.Result.Should().BeOfType<InternalServerError<Status>>().Subject;

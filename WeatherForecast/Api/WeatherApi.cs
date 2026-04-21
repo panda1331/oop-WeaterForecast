@@ -68,7 +68,28 @@ namespace WeatherForecast.Api
                                     string? days = null,
                                     string? provider = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var latitude = decimal.Parse(lat ?? "18.300231990440125", CultureInfo.InvariantCulture);
+                var longitude = decimal.Parse(lon ?? "-64.8251590359234", CultureInfo.InvariantCulture);
+                var ds = int.Parse(days ?? "3", CultureInfo.InvariantCulture);
+                var providerValue = provider ?? "openweather";
+
+                var forecast = await controller.GetWeatherForecastAsync(latitude, longitude, ds, providerValue);
+                return TypedResults.Ok(Success.Create(200, "success", forecast));
+            }
+            catch (FormatException)
+            {
+                return TypedResults.BadRequest(Status.Create(400, "invalid coordinates"));
+            }
+            catch (OverflowException)
+            {
+                return TypedResults.BadRequest(Status.Create(400, "invalid coordinates"));
+            }
+            catch (ApiCallException e)
+            {
+                return TypedResults.InternalServerError(Status.Create(500, e.Message));
+            }
         }
     }
 }
