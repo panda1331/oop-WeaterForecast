@@ -22,9 +22,12 @@ namespace WeatherForecast.Controllers
             return new CurrentWeather(temperature);
         }
 
-        public Task<CurrentWeather> GetCurrentWeatherByCityAsync(string city, string provider = "openweather")
+        public async Task<CurrentWeather> GetCurrentWeatherByCityAsync(string city, string provider = "openweather")
         {
-            throw new NotImplementedException();
+            var coordinates = _locationResolver.ResolveCity(city);
+            var client = _factory.GetCurrentWeatherProvider(provider);
+            var temperature = await client.LocationCurrentTemperature(coordinates.Latitude, coordinates.Longitude);
+            return new CurrentWeather(temperature);
         }
     }
 }
