@@ -19,7 +19,13 @@ namespace WeatherForecast.Services
         }
         public Coordinates ResolveCity(string city)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(city))
+                throw new ArgumentException("city cannot be empty");
+
+            if (_cities.TryGetValue(city.Trim(), out var coordinates))
+                return coordinates;
+
+            throw new ArgumentException($"Unknown city: {city}");
         }
     }
 }

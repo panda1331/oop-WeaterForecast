@@ -56,7 +56,7 @@ namespace WeatherForecast.Tests.Services
             var resolver = new LocationResolver();
             Action act = () => resolver.ResolveCity("");
 
-            act?.Should()
+            act.Should()
                 .Throw<ArgumentException>()
                 .WithMessage("*cannot be empty*");
         }
