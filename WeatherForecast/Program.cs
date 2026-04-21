@@ -25,6 +25,7 @@ builder.Services.AddHttpClient<GoogleWeatherDataClient>();
 builder.Services.AddSingleton<IWeatherProviderFactory, WeatherProviderFactory>();
 builder.Services.AddSingleton<ICurrentWeatherController, CurrentWeatherController>();
 builder.Services.AddSingleton<IForecastController, ForecastController>();
+builder.Services.AddSingleton<IMultipleLocationController, MultipleLocationController>();
 
 var app = builder.Build();
 
