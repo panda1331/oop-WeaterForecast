@@ -12,15 +12,7 @@ namespace WeatherForecast.Controllers
         }
         public async Task<List<LocationTemperature>> GetMultipleTemperaturesAsync(List<Coordinates> locations, string provider = "openweather")
         {
-            //var temperatures = new List<LocationTemperature>();
             var client = _factory.GetCurrentWeatherProvider(provider);
-            //foreach (var location in locations)
-            //{
-            //    var temp = await client.LocationCurrentTemperature(location.Latitude, location.Longitude);
-            //    temperatures.Add(new LocationTemperature(location.Latitude, location.Longitude, temp));
-            //}
-            //return temperatures;
-
             var tasks = locations.Select(async loc =>
             {
                 var temp = await client.LocationCurrentTemperature(loc.Latitude, loc.Longitude);

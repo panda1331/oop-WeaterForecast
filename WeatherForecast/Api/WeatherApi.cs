@@ -28,6 +28,13 @@ namespace WeatherForecast.Api
                 .WithTags(["weather"])
                 .WithDescription("Returns weather forecast for given coordinates");
 
+            groups
+                .MapGet("weather/multiple", WeatherApi.HandleGetMultipleWeather)
+                .WithName("GetMultipleWeather")
+                .WithDisplayName("Get Multiple Weather")
+                .WithTags(["weather"])
+                .WithDescription("Returns current weather for multiple locations");
+
             return groups;
         }
 
@@ -77,6 +84,51 @@ namespace WeatherForecast.Api
 
                 var forecast = await controller.GetWeatherForecastAsync(latitude, longitude, ds, providerValue);
                 return TypedResults.Ok(Success.Create(200, "success", forecast));
+            }
+            catch (FormatException)
+            {
+                return TypedResults.BadRequest(Status.Create(400, "invalid coordinates"));
+            }
+            catch (OverflowException)
+            {
+                return TypedResults.BadRequest(Status.Create(400, "invalid coordinates"));
+            }
+            catch (ApiCallException e)
+            {
+                return TypedResults.InternalServerError(Status.Create(500, e.Message));
+            }
+        }
+
+        public static async Task<Results<Ok<Success<List<LocationTemperature>>>, BadRequest<Status>, InternalServerError<Status>>>
+            HandleGetMultipleWeather([FromServices] IMultipleLocationController controller,
+                                        string? locations = null,
+                                        string? provider = null)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(locations))
+                    return TypedResults.BadRequest(Status.Create(400, "locations parameter is required"));
+                var providerValue = provider ?? "openweather";
+
+                var coordinates = new List<Coordinates>();
+                var pairs = locations.Split(';', StringSplitOptions.TrimEntries);
+                foreach(var pair in pairs)
+                {
+                    var parts = pair.Split(',', StringSplitOptions.TrimEntries);
+                    if (parts.Length != 2)
+                        return TypedResults.BadRequest(Status.Create(400, "invalid locations format"));
+
+                    if (!decimal.TryParse(parts[0], CultureInfo.InvariantCulture, out var lat) ||
+                        !decimal.TryParse(parts[1], CultureInfo.InvariantCulture, out var lon))
+                        return TypedResults.BadRequest(Status.Create(400, "invalid coordinates"));
+                    coordinates.Add(new Coordinates(lat, lon));
+                }
+
+                if (coordinates.Count == 0)
+                    return TypedResults.BadRequest(Status.Create(400, "no valid locations provided"));
+
+                var temps = await controller.GetMultipleTemperaturesAsync(coordinates, providerValue);
+                return TypedResults.Ok(Success.Create(200, "success", temps));
             }
             catch (FormatException)
             {
