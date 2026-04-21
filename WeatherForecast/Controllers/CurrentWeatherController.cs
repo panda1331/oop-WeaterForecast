@@ -1,15 +1,18 @@
 ﻿using WeatherForecast.Clients;
 using WeatherForecast.Factories;
 using WeatherForecast.Models.Weather;
+using WeatherForecast.Services;
 
 namespace WeatherForecast.Controllers
 {
     public class CurrentWeatherController : ICurrentWeatherController
     {
         private readonly IWeatherProviderFactory _factory;
-        public CurrentWeatherController(IWeatherProviderFactory providerFactory)
+        private readonly ILocationResolver _locationResolver;
+        public CurrentWeatherController(IWeatherProviderFactory providerFactory, ILocationResolver locationResolver)
         {
             _factory = providerFactory;
+            _locationResolver = locationResolver;
         }
 
         public async Task<CurrentWeather> GetCurrentWeatherAsync(decimal latitude, decimal longitude, string provider = "openweather")
@@ -17,6 +20,11 @@ namespace WeatherForecast.Controllers
             var client = _factory.GetCurrentWeatherProvider(provider);
             var temperature = await client.LocationCurrentTemperature(latitude, longitude);
             return new CurrentWeather(temperature);
-        } 
+        }
+
+        public Task<CurrentWeather> GetCurrentWeatherByCityAsync(string city, string provider = "openweather")
+        {
+            throw new NotImplementedException();
+        }
     }
 }
