@@ -10,10 +10,11 @@ namespace WeatherForecast.Controllers
         {
             _factory = factory;
         }
-        public async Task<WeatherForecastModel> GetWeatherForecastAsync(decimal latitude, decimal longitude, int days, string provider)
+        public async Task<WeatherForecastModel> GetWeatherForecastAsync(decimal latitude, decimal longitude, int days, string provider = "openweather")
         {
-            var client = _factory.GetForecastProvider(provider);
-            return await client.GetForecastAsync(latitude, longitude, days);
+            //var client = _factory.GetForecastProvider(provider);
+            //return await client.GetForecastAsync(latitude, longitude, days);
+            throw new NotImplementedException();
         }
     }
 }

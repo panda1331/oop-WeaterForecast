@@ -72,7 +72,7 @@ namespace WeatherForecast.Tests.Controllers
         {
             var latitude = 53.8930m;
             var longitude = 27.5674m;
-            var provider = "googleweather";
+            var provider = "google";
             var expectedTemp = 22.5m;
 
             var mockClient = new Mock<IWeatherDataClient>();
