@@ -10,9 +10,25 @@ namespace WeatherForecast.Controllers
         {
             _factory = factory;
         }
-        public Task<List<LocationTemperature>> GetMultipleTemperaturesAsync(List<Coordinates> locations, string provider = "openweather")
+        public async Task<List<LocationTemperature>> GetMultipleTemperaturesAsync(List<Coordinates> locations, string provider = "openweather")
         {
-            throw new NotImplementedException();
+            //var temperatures = new List<LocationTemperature>();
+            var client = _factory.GetCurrentWeatherProvider(provider);
+            //foreach (var location in locations)
+            //{
+            //    var temp = await client.LocationCurrentTemperature(location.Latitude, location.Longitude);
+            //    temperatures.Add(new LocationTemperature(location.Latitude, location.Longitude, temp));
+            //}
+            //return temperatures;
+
+            var tasks = locations.Select(async loc =>
+            {
+                var temp = await client.LocationCurrentTemperature(loc.Latitude, loc.Longitude);
+                return new LocationTemperature(loc.Latitude, loc.Longitude, temp);
+            });
+
+            var temperatures = await Task.WhenAll(tasks);
+            return temperatures.ToList();
         }
     }
 }
