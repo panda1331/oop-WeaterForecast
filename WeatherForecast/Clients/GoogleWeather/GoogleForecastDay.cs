@@ -38,7 +38,7 @@ namespace WeatherForecast.Clients.GoogleWeather
 
     public class DaytimeForecast
     {
-        [JsonPropertyName("weatherForecast")]
+        [JsonPropertyName("weatherCondition")]
         public WeatherCondition WeatherCondition { get; set; }
 
         [JsonPropertyName("relativeHumidity")]
