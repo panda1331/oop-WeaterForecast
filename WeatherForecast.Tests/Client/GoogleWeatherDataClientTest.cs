@@ -5,6 +5,7 @@ using Moq.Protected;
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Text;
 using WeatherForecast.Clients.GoogleWeather;
 using WeatherForecast.Utils;
@@ -175,6 +176,68 @@ namespace WeatherForecast.Tests.Client
             result.Days[0].Condition.Should().Be("Partly cloudy");
             result.Days[0].Humidity.Should().Be(65);
             result.Days[0].WindSpeed.Should().Be(4.5m);
+        }
+
+        [Fact]
+        public async Task GetForecastAsync_WithNonSuccessStatusCode_ThrowsApiCallException()
+        {
+            var latitude = 55.7558m;
+            var longitude = 37.6173m;
+            var days = 3;
+
+            var client = CreateClient(HttpStatusCode.InternalServerError, "");
+
+            Func<Task> act = async () => await client.GetForecastAsync(latitude,longitude, days);
+
+            await act.Should().ThrowAsync<ApiCallException>().WithMessage("*bad status: 500*");
+        }
+
+        [Fact]
+        public async Task GetForecastAsync_WithInvalidJson_ThrowsApiCallException()
+        {
+            var latitude = 55.7558m;
+            var longitude = 37.6173m;
+            var days = 3;
+
+            var client = CreateClient(HttpStatusCode.OK, "{}");
+
+            Func<Task> act = async () => await client.GetForecastAsync(latitude, longitude, days);
+
+            await act.Should()
+                .ThrowAsync<ApiCallException>()
+                .WithMessage("failed to decode response");
+        }
+
+        [Fact]
+        public async Task GetForecastAsync_WithEmptyForecastDays_ThrowsApiCallException()
+        {
+            var latitude = 55.7558m;
+            var longitude = 37.6173m;
+            var days = 3;
+
+            var jsonResponse = "{\"forecastDays\": []}";
+            var client = CreateClient(HttpStatusCode.OK, jsonResponse);
+
+            Func<Task> act = async () => await client.GetForecastAsync(latitude, longitude, days);
+
+            await act.Should()
+                .ThrowAsync<ApiCallException>()
+                .WithMessage("failed to decode response");
+        }
+
+        [Fact]
+        public async Task GetForecastAsync_WithNetworkError_ThrowsApiCallException()
+        {
+            var latitude = 55.7558m;
+            var longitude = 37.6173m;
+            var days = 3;
+
+            var client = CreateClientThatThrows(new HttpRequestException("Network timeout"));
+            Func<Task> act = async () => await client.GetForecastAsync(latitude, longitude, days);
+
+            await act.Should()
+                .ThrowAsync<ApiCallException>()
+                .WithMessage("*failed to call googleweather*");
         }
     }
 }
