@@ -59,18 +59,18 @@ namespace WeatherForecast.Clients.GoogleWeather
                     throw new ApiCallException($"googleweather returned bad status: {(ushort)response.StatusCode}");
 
                 var data = await response.Content.ReadFromJsonAsync<GoogleForecastResponse>();
-                if (data?.ForecastDays == null || data.ForecastDays.Count == 0)
+                if (data?.ForecastDays?.Any() != true)
                     throw new ApiCallException("failed to decode response");
                 
                 return new WeatherForecastModel
                 (
-                    data.ForecastDays.Select(d => new ForecastDay(
-                        new DateTime(d.Date.Year, d.Date.Month, d.Date.Day),
-                        d.MinTemperature?.Degrees ?? 0,
-                        d.MaxTemperature?.Degrees ?? 0,
-                        d.DayTime?.WeatherCondition?.Description?.Text ?? "unknown",
-                        d.DayTime?.RelativeHumidity ?? 0,
-                        d.DayTime?.Wind?.Speed?.Value ?? 0
+                    data.ForecastDays.Select(day => new ForecastDay(
+                        new DateTime(day.Date.Year, day.Date.Month, day.Date.Day),
+                        day.MinTemperature?.Degrees ?? 0,
+                        day.MaxTemperature?.Degrees ?? 0,
+                        day.DayTime?.WeatherCondition?.Description?.Text ?? "unknown",
+                        day.DayTime?.RelativeHumidity ?? 0,
+                        day.DayTime?.Wind?.Speed?.Value ?? 0
                     )).ToList()
                 );
             }
