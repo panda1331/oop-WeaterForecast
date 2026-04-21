@@ -11,7 +11,17 @@ namespace WeatherForecast.Factories
         {
             _serviceProvider = serviceProvider;
         }
-        public IWeatherDataClient GetProvider(string providerName)
+        public IWeatherDataClient GetCurrentWeatherProvider(string providerName)
+        {
+            return providerName.ToLower() switch
+            {
+                "openweather" => _serviceProvider.GetRequiredService<OpenWeatherDataClient>(),
+                "google" => _serviceProvider.GetRequiredService<GoogleWeatherDataClient>(),
+                _ => throw new ArgumentException($"Unknown provider {providerName}")
+            };
+        }
+
+        public IWeatherForecastClient GetForecastProvider(string providerName)
         {
             return providerName.ToLower() switch
             {

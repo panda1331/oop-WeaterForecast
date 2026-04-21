@@ -4,6 +4,7 @@ namespace WeatherForecast.Factories
 {
     public interface IWeatherProviderFactory
     {
-        IWeatherDataClient GetProvider(string providerName);
+        IWeatherDataClient GetCurrentWeatherProvider(string providerName);
+        IWeatherForecastClient GetForecastProvider(string providerName);
     }
 }

@@ -14,7 +14,7 @@ namespace WeatherForecast.Controllers
 
         public async Task<CurrentWeather> GetCurrentWeatherAsync(decimal latitude, decimal longitude, string provider = "openweather")
         {
-            var client = _factory.GetProvider(provider);
+            var client = _factory.GetCurrentWeatherProvider(provider);
             var temperature = await client.LocationCurrentTemperature(latitude, longitude);
             return new CurrentWeather(temperature);
         } 
