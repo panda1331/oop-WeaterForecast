@@ -1,6 +1,4 @@
 ﻿namespace WeatherForecast.Models.Weather
 {
-    public class LocationTemperature
-    {
-    }
+    public record LocationTemperature(decimal Latitude,  decimal Longitude, decimal Temperature) {}
 }
