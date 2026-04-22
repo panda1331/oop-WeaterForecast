@@ -19,9 +19,11 @@ namespace WeatherForecast.Controllers
             return await client.GetForecastAsync(latitude, longitude, days);
         }
 
-        public Task<WeatherForecastModel> GetWeatherForecastByCityAsync(string city, int days, string provider = "openweather")
+        public async Task<WeatherForecastModel> GetWeatherForecastByCityAsync(string city, int days, string provider = "openweather")
         {
-            throw new NotImplementedException();
+            var coordinates = _locationResolver.ResolveCity(city);
+            var client = _factory.GetForecastProvider(provider);
+            return await client.GetForecastAsync(coordinates.Latitude, coordinates.Longitude, days);
         }
     }
 }
