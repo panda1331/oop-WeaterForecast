@@ -47,14 +47,14 @@ namespace WeatherForecast.Api
         {
             try
             {
+                var providerValue = provider ?? "openweather";
                 if (!string.IsNullOrEmpty(city))
                 {
-                    var cityWeather = await controller.GetCurrentWeatherByCityAsync(city, provider);
+                    var cityWeather = await controller.GetCurrentWeatherByCityAsync(city, providerValue);
                     return TypedResults.Ok(Success.Create(200, "success", cityWeather));
                 }
                 var latitude = decimal.Parse(lat ?? "18.300231990440125", CultureInfo.InvariantCulture);
                 var longitude = decimal.Parse(lon ?? "-64.8251590359234", CultureInfo.InvariantCulture);
-                var providerValue = provider ?? "openweather";
 
                 var weather = await controller.GetCurrentWeatherAsync(latitude, longitude, providerValue);
 
