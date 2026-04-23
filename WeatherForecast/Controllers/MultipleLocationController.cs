@@ -26,9 +26,13 @@ namespace WeatherForecast.Controllers
             return temperatures.ToList();
         }
 
-        public Task<List<LocationTemperature>> GetMultipleTemperaturesByCitiesAsync(List<string> cities, string provider = "openweather")
+        public async Task<List<LocationTemperature>> GetMultipleTemperaturesByCitiesAsync(List<string> cities, string provider = "openweather")
         {
-            throw new NotImplementedException();
+            if (cities == null || cities.Count == 0)
+                return new List<LocationTemperature>();
+
+            var coordinates = cities.Select(c => _locationResolver.ResolveCity(c)).ToList();
+            return await GetMultipleTemperaturesAsync(coordinates, provider);
         }
     }
 }

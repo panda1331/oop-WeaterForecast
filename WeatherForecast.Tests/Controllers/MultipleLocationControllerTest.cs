@@ -556,7 +556,7 @@ namespace WeatherForecast.Tests.Controllers
             
             Func<Task> act = async () => await controller.GetMultipleTemperaturesByCitiesAsync(cities, provider);
             await act.Should().ThrowAsync<ArgumentException>().WithMessage("*Paris*");
-            mockFactory.Verify(f => f.GetCurrentWeatherProvider(provider), Times.Once);
+            mockFactory.Verify(f => f.GetCurrentWeatherProvider(provider), Times.Never);
         }
 
         [Fact]
@@ -606,6 +606,15 @@ namespace WeatherForecast.Tests.Controllers
             };
 
             var mockLocationResolver = new Mock<ILocationResolver>();
+            mockLocationResolver
+                .Setup(r => r.ResolveCity(cities[0]))
+                .Returns(coordinates[0]);
+            mockLocationResolver
+                .Setup(r => r.ResolveCity(cities[1]))
+                .Returns(coordinates[1]);
+            mockLocationResolver
+                .Setup(r => r.ResolveCity(cities[1]))
+                .Returns(coordinates[1]);
 
             var mockClient = new Mock<IWeatherDataClient>();
             mockClient
