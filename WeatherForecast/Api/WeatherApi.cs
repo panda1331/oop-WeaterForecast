@@ -47,6 +47,11 @@ namespace WeatherForecast.Api
         {
             try
             {
+                if (!string.IsNullOrEmpty(city))
+                {
+                    var cityWeather = await controller.GetCurrentWeatherByCityAsync(city, provider);
+                    return TypedResults.Ok(Success.Create(200, "success", cityWeather));
+                }
                 var latitude = decimal.Parse(lat ?? "18.300231990440125", CultureInfo.InvariantCulture);
                 var longitude = decimal.Parse(lon ?? "-64.8251590359234", CultureInfo.InvariantCulture);
                 var providerValue = provider ?? "openweather";
@@ -54,6 +59,10 @@ namespace WeatherForecast.Api
                 var weather = await controller.GetCurrentWeatherAsync(latitude, longitude, providerValue);
 
                 return TypedResults.Ok(Success.Create(200, "success", weather));
+            }
+            catch (ArgumentException e)
+            {
+                return TypedResults.BadRequest(Status.Create(400, e.Message));
             }
             catch (FormatException)
             {

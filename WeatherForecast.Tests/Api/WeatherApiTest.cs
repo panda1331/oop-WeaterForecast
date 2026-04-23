@@ -30,7 +30,7 @@ namespace WeatherForecast.Tests.Api
                 .Setup(c => c.GetCurrentWeatherAsync(It.IsAny<decimal>(), It.IsAny<decimal>()))
                 .ReturnsAsync(expectedWeather);
 
-            var result = await WeatherApi.HandleGetCurrentWeather(mockController.Object, latitude, longitude, provider);
+            var result = await WeatherApi.HandleGetCurrentWeather(mockController.Object, latitude, longitude, null, provider);
 
             var okResult = result.Result.Should().BeOfType<Ok<Success<CurrentWeather>>>().Subject;
             okResult.Value.Should().NotBeNull();
@@ -46,7 +46,7 @@ namespace WeatherForecast.Tests.Api
             var longitude = "14.2345";
             var provider = "openweather";
             var mockController = new Mock<ICurrentWeatherController>();
-            var result = await WeatherApi.HandleGetCurrentWeather(mockController.Object, latitude, longitude, provider);
+            var result = await WeatherApi.HandleGetCurrentWeather(mockController.Object, latitude, longitude, null, provider);
             var badRequestResult = result.Result.Should().BeOfType<BadRequest<Status>>().Subject;
             badRequestResult.Value.Should().NotBeNull();
             badRequestResult.Value!.Code.Should().Be(400);
@@ -60,7 +60,7 @@ namespace WeatherForecast.Tests.Api
             var longitude = "14.2345";
             var provider = "openweather";
             var mockController = new Mock<ICurrentWeatherController>();
-            var result = await WeatherApi.HandleGetCurrentWeather(mockController.Object, latitude, longitude, provider);
+            var result = await WeatherApi.HandleGetCurrentWeather(mockController.Object, latitude, longitude, null, provider);
             var badRequestResult = result.Result.Should().BeOfType<BadRequest<Status>>().Subject;
             badRequestResult.Value.Should().NotBeNull();
             badRequestResult.Value!.Code.Should().Be(400);
@@ -77,7 +77,7 @@ namespace WeatherForecast.Tests.Api
             mockController
                 .Setup(c => c.GetCurrentWeatherAsync(It.IsAny<decimal>(), It.IsAny<decimal>()))
                 .ThrowsAsync(new ApiCallException("API is not available."));
-            var result = await WeatherApi.HandleGetCurrentWeather(mockController.Object, latitude, longitude, provider);
+            var result = await WeatherApi.HandleGetCurrentWeather(mockController.Object, latitude, longitude, null, provider);
             var internalServerError = result.Result.Should().BeOfType<InternalServerError<Status>>().Subject;
             internalServerError.Value.Should().NotBeNull();
             internalServerError.Value!.Code.Should().Be(500);
@@ -91,7 +91,7 @@ namespace WeatherForecast.Tests.Api
         {
             var city = "Minsk";
             var provider = "openweather";
-            var expectedResult = new CurrentWeather(18.5m);
+            var expectedResult = new CurrentWeather(22.5m);
 
             var mockController = new Mock<ICurrentWeatherController>();
             mockController
@@ -100,14 +100,13 @@ namespace WeatherForecast.Tests.Api
 
             var result = await WeatherApi.HandleGetCurrentWeather(mockController.Object, null, null, city, provider);
             var okResult = result.Result.Should().BeOfType<Ok<Success<CurrentWeather>>>().Subject;
-            okResult.Value!.Data.Temperature.Should().Be(18.5m);
+            okResult.Value!.Data.Temperature.Should().Be(22.5m);
         }
 
         [Fact]
         public async Task HandleGetCurrentWeather_WithUnknownCity_ReturnsBadRequest()
         {
             var city = "Paris";
-            var expectedResult = new CurrentWeather(18.5m);
 
             var mockController = new Mock<ICurrentWeatherController>();
             mockController
