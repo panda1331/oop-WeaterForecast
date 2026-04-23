@@ -1,14 +1,17 @@
 ﻿using WeatherForecast.Factories;
 using WeatherForecast.Models.Weather;
+using WeatherForecast.Services;
 
 namespace WeatherForecast.Controllers
 {
     public class MultipleLocationController : IMultipleLocationController
     {
         private readonly IWeatherProviderFactory _factory;
-        public MultipleLocationController(IWeatherProviderFactory factory)
+        private readonly ILocationResolver _locationResolver;
+        public MultipleLocationController(IWeatherProviderFactory factory, ILocationResolver locationResolver)
         {
             _factory = factory;
+            _locationResolver = locationResolver;
         }
         public async Task<List<LocationTemperature>> GetMultipleTemperaturesAsync(List<Coordinates> locations, string provider = "openweather")
         {
@@ -21,6 +24,11 @@ namespace WeatherForecast.Controllers
 
             var temperatures = await Task.WhenAll(tasks);
             return temperatures.ToList();
+        }
+
+        public Task<List<LocationTemperature>> GetMultipleTemperaturesByCitiesAsync(List<string> cities, string provider = "openweather")
+        {
+            throw new NotImplementedException();
         }
     }
 }
