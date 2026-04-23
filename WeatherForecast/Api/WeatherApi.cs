@@ -82,18 +82,29 @@ namespace WeatherForecast.Api
             HandleGetWeatherForecast([FromServices] IForecastController controller,
                                     string? lat = null,
                                     string? lon = null,
+                                    string? city = null,
                                     string? days = null,
                                     string? provider = null)
         {
             try
             {
-                var latitude = decimal.Parse(lat ?? "18.300231990440125", CultureInfo.InvariantCulture);
-                var longitude = decimal.Parse(lon ?? "-64.8251590359234", CultureInfo.InvariantCulture);
                 var ds = int.Parse(days ?? "3", CultureInfo.InvariantCulture);
                 var providerValue = provider ?? "openweather";
-
+                
+                if (!string.IsNullOrEmpty(city))
+                {
+                    var cityForecast = await controller.GetWeatherForecastByCityAsync(city, ds, providerValue);
+                    return TypedResults.Ok(Success.Create(200, "success", cityForecast));
+                }
+                var latitude = decimal.Parse(lat ?? "18.300231990440125", CultureInfo.InvariantCulture);
+                var longitude = decimal.Parse(lon ?? "-64.8251590359234", CultureInfo.InvariantCulture);
+                
                 var forecast = await controller.GetWeatherForecastAsync(latitude, longitude, ds, providerValue);
                 return TypedResults.Ok(Success.Create(200, "success", forecast));
+            }
+            catch (ArgumentException e)
+            {
+                return TypedResults.BadRequest(Status.Create(400, e.Message));
             }
             catch (FormatException)
             {
