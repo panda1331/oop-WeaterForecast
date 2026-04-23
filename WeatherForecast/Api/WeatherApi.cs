@@ -42,6 +42,7 @@ namespace WeatherForecast.Api
             HandleGetCurrentWeather([FromServices] ICurrentWeatherController controller,
                                         string? lat = null,
                                         string? lon = null,
+                                        string? city = null,
                                         string? provider = null)
         {
             try

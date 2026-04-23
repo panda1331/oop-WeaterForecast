@@ -84,6 +84,41 @@ namespace WeatherForecast.Tests.Api
             internalServerError.Value.Message.Should().Be("API is not available.");
         }
 
+        //---------------------------HANDLE GET CURRENT WEATHER WITH CITY ---------------------------//
+
+        [Fact]
+        public async Task HandleGetCurrentWeather_WithCity_ReturnsOk()
+        {
+            var city = "Minsk";
+            var provider = "openweather";
+            var expectedResult = new CurrentWeather(18.5m);
+
+            var mockController = new Mock<ICurrentWeatherController>();
+            mockController
+                .Setup(c => c.GetCurrentWeatherByCityAsync(city, provider))
+                .ReturnsAsync(expectedResult);
+
+            var result = await WeatherApi.HandleGetCurrentWeather(mockController.Object, null, null, city, provider);
+            var okResult = result.Result.Should().BeOfType<Ok<Success<CurrentWeather>>>().Subject;
+            okResult.Value!.Data.Temperature.Should().Be(18.5m);
+        }
+
+        [Fact]
+        public async Task HandleGetCurrentWeather_WithUnknownCity_ReturnsBadRequest()
+        {
+            var city = "Paris";
+            var expectedResult = new CurrentWeather(18.5m);
+
+            var mockController = new Mock<ICurrentWeatherController>();
+            mockController
+                .Setup(c => c.GetCurrentWeatherByCityAsync(city, It.IsAny<string>()))
+                .ThrowsAsync(new ArgumentException("Unknown city: Paris"));
+            var result = await WeatherApi.HandleGetCurrentWeather(mockController.Object, null, null, city, null);
+            var badRequest = result.Result.Should().BeOfType<BadRequest<Status>>().Subject;
+            badRequest.Value!.Code.Should().Be(400);
+            badRequest.Value.Message.Should().Contain("Paris");
+        }
+
         //---------------------------HANDLE GET WEATHER FORECAST ----------------------------//
         [Fact]
         public async Task HandleGetWeatherForecast_WithValidParams_ReturnOkResult()

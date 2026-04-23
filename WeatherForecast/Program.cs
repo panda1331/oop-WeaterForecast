@@ -5,6 +5,7 @@ using WeatherForecast.Clients.GoogleWeather;
 using WeatherForecast.Clients.OpenWeather;
 using WeatherForecast.Controllers;
 using WeatherForecast.Factories;
+using WeatherForecast.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +27,7 @@ builder.Services.AddSingleton<IWeatherProviderFactory, WeatherProviderFactory>()
 builder.Services.AddSingleton<ICurrentWeatherController, CurrentWeatherController>();
 builder.Services.AddSingleton<IForecastController, ForecastController>();
 builder.Services.AddSingleton<IMultipleLocationController, MultipleLocationController>();
+builder.Services.AddSingleton<ILocationResolver, LocationResolver>();
 
 var app = builder.Build();
 
