@@ -123,13 +123,21 @@ namespace WeatherForecast.Api
         public static async Task<Results<Ok<Success<List<LocationTemperature>>>, BadRequest<Status>, InternalServerError<Status>>>
             HandleGetMultipleWeather([FromServices] IMultipleLocationController controller,
                                         string? locations = null,
+                                        string? cities = null,
                                         string? provider = null)
         {
             try
             {
+                var providerValue = provider ?? "openweather";
+
+                if (!string.IsNullOrEmpty(cities))
+                {
+                    var citiesList = cities.Split(',', StringSplitOptions.TrimEntries).ToList();
+                    var citiesTemps = await controller.GetMultipleTemperaturesByCitiesAsync(citiesList, providerValue);
+                    return TypedResults.Ok(Success.Create(200, "success", citiesTemps));
+                }
                 if (string.IsNullOrEmpty(locations))
                     return TypedResults.BadRequest(Status.Create(400, "locations parameter is required"));
-                var providerValue = provider ?? "openweather";
 
                 var coordinates = new List<Coordinates>();
                 var pairs = locations.Split(';', StringSplitOptions.TrimEntries);
@@ -150,6 +158,10 @@ namespace WeatherForecast.Api
 
                 var temps = await controller.GetMultipleTemperaturesAsync(coordinates, providerValue);
                 return TypedResults.Ok(Success.Create(200, "success", temps));
+            }
+            catch (ArgumentException e)
+            {
+                return TypedResults.BadRequest(Status.Create(400, e.Message));
             }
             catch (FormatException)
             {

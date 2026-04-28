@@ -170,12 +170,20 @@ namespace WeatherForecast.Tests.Client
 
             result.Should().NotBeNull();
             result.Days.Should().HaveCount(2);
+
             result.Days[0].Date.Should().Be(new DateTime(2026, 4, 22));
             result.Days[0].MaxTemperature.Should().Be(18.5m);
             result.Days[0].MinTemperature.Should().Be(8.2m);
             result.Days[0].Condition.Should().Be("Partly cloudy");
             result.Days[0].Humidity.Should().Be(65);
             result.Days[0].WindSpeed.Should().Be(4.5m);
+
+            result.Days[1].Date.Should().Be(new DateTime(2026, 4, 23));
+            result.Days[1].MaxTemperature.Should().Be(20.1m);
+            result.Days[1].MinTemperature.Should().Be(10.3m);
+            result.Days[1].Condition.Should().Be("Sunny");
+            result.Days[1].Humidity.Should().Be(55);
+            result.Days[1].WindSpeed.Should().Be(3.2m);
         }
 
         [Fact]

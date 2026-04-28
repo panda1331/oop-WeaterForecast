@@ -15,12 +15,8 @@ builder.Configuration.AddEnvironmentVariables();
 
 // Add services to the container.
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddOpenApiDocument(config =>
-{
-    config.DocumentName = "WeatherExampleAPI";
-    config.Title = "Weather Example API";
-    config.Version = "v1";
-});
+builder.Services.AddSwaggerGen();
+
 builder.Services.AddHttpClient<OpenWeatherDataClient>();
 builder.Services.AddHttpClient<GoogleWeatherDataClient>();
 builder.Services.AddSingleton<IWeatherProviderFactory, WeatherProviderFactory>();
@@ -34,8 +30,8 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseOpenApi();
-    app.UseSwaggerUi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
     app.UseDeveloperExceptionPage();
 }
 

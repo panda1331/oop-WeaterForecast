@@ -35,8 +35,8 @@ namespace WeatherForecast.Tests.Services
             var resolver = new LocationResolver();
             var result = resolver.ResolveCity("  Tokyo  ");
 
-            result.Latitude.Should().Be(35.6762m);
-            result.Longitude.Should().Be(139.6503m);
+            result.Latitude.Should().Be(35.68952m);
+            result.Longitude.Should().Be(139.69171m);
         }
 
         [Fact]

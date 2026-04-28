@@ -12,8 +12,8 @@ namespace WeatherForecast.Services
             {
                 ["minsk"] = new Coordinates(53.8930m, 27.5674m),
                 ["london"] = new Coordinates(51.5074m, -0.1278m),
-                ["tokyo"] = new Coordinates(35.6762m, 139.6503m),
-                ["shanghai"] = new Coordinates(31.2304m, 121.4737m),
+                ["tokyo"] = new Coordinates(35.68952m, 139.69171m),
+                ["shanghai"] = new Coordinates(31.25547m, 121.68339m),
                 ["warsaw"] = new Coordinates(52.2298m, 21.0122m)
             };
         }

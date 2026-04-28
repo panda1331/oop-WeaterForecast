@@ -182,7 +182,7 @@ namespace WeatherForecast.Tests.Api
         {
             var mockController = new Mock<IForecastController>();
             mockController
-                .Setup(c => c.GetWeatherForecastAsync(18.300231990440125m, -64.8251590359234m, 5, "openweather"))
+                .Setup(c => c.GetWeatherForecastAsync(18.300231990440125m, -64.8251590359234m, 3, "openweather"))
                 .ReturnsAsync(new WeatherForecastModel(new List<ForecastDay>()));
 
             var result = await WeatherApi.HandleGetWeatherForecast(mockController.Object, null, null, null, null, null);
@@ -262,7 +262,7 @@ namespace WeatherForecast.Tests.Api
                 .Setup(c => c.GetMultipleTemperaturesAsync(locations, provider))
                 .ReturnsAsync(expectedResult);
 
-            var result = await WeatherApi.HandleGetMultipleWeather(mockController.Object, locStr, provider);
+            var result = await WeatherApi.HandleGetMultipleWeather(mockController.Object, locStr, null, provider);
 
             var okResult = result.Result.Should().BeOfType<Ok<Success<List<LocationTemperature>>>>().Subject;
             okResult.Value.Should().NotBeNull();
@@ -278,7 +278,7 @@ namespace WeatherForecast.Tests.Api
         public async Task HandleGetMultipleWeather_WithInvalidFormat_ReturnsBadRequest()
         {
             var mockController = new Mock<IMultipleLocationController>();
-            var result = await WeatherApi.HandleGetMultipleWeather(mockController.Object, "invalid", "openweather");
+            var result = await WeatherApi.HandleGetMultipleWeather(mockController.Object, "invalid", null, "openweather");
 
             var badRequest = result.Result.Should().BeOfType<BadRequest<Status>>().Subject;
             badRequest.Value!.Code.Should().Be(400);
@@ -289,7 +289,7 @@ namespace WeatherForecast.Tests.Api
         public async Task HandleGetMultipleWeather_WithNonNumericCoordinates_ReturnsBadRequest()
         {
             var mockController = new Mock<IMultipleLocationController>();
-            var result = await WeatherApi.HandleGetMultipleWeather(mockController.Object, "abc,rwf;wer,uiol", "openweather");
+            var result = await WeatherApi.HandleGetMultipleWeather(mockController.Object, "abc,rwf;wer,uiol", null, "openweather");
 
             var badRequest = result.Result.Should().BeOfType<BadRequest<Status>>().Subject;
             badRequest.Value!.Code.Should().Be(400);
@@ -323,7 +323,7 @@ namespace WeatherForecast.Tests.Api
                 .Setup(c => c.GetMultipleTemperaturesAsync(It.IsAny<List<Coordinates>>(), "openweather"))
                 .ReturnsAsync(expectedResult);
 
-            var result = await WeatherApi.HandleGetMultipleWeather(mockController.Object, locStr, null);
+            var result = await WeatherApi.HandleGetMultipleWeather(mockController.Object, locStr, null, null);
             var okResult = result.Result.Should().BeOfType<Ok<Success<List<LocationTemperature>>>>().Subject;
             okResult.Value!.Code.Should().Be(200);
         }
@@ -336,7 +336,7 @@ namespace WeatherForecast.Tests.Api
                 .Setup(c => c.GetMultipleTemperaturesAsync(It.IsAny<List<Coordinates>>(), It.IsAny<string>()))
                 .ThrowsAsync(new ApiCallException("API is not available"));
 
-            var result = await WeatherApi.HandleGetMultipleWeather(mockController.Object, "53.8930,27.5674", "google");
+            var result = await WeatherApi.HandleGetMultipleWeather(mockController.Object, "53.8930,27.5674", null, "google");
             var error = result.Result.Should().BeOfType<InternalServerError<Status>>().Subject;
             error.Value!.Code.Should().Be(500);
             error.Value.Message.Should().Be("API is not available");

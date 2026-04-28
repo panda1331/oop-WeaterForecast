@@ -156,6 +156,7 @@ namespace WeatherForecast.Tests.Controllers
         }
 
         //---------------------GET CURRENT WEATHER BY CITY----------------//
+        [Fact]
         public async Task GetCurrentWeatherByCityAsync_WithValidCity_ReturnsTemperature()
         {
             var city = "Minsk";
