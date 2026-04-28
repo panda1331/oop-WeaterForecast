@@ -52,9 +52,9 @@ namespace WeatherForecast.Clients.OpenWeather
         {
             try
             {
-                var latStr = latitude.ToString(System.Globalization.CultureInfo.InvariantCulture);
-                var lonStr = longitude.ToString(System.Globalization.CultureInfo.InvariantCulture);
-                var daysStr = days.ToString(System.Globalization.CultureInfo.InvariantCulture);
+                var latStr = latitude.ToString(CultureInfo.InvariantCulture);
+                var lonStr = longitude.ToString(CultureInfo.InvariantCulture);
+                var daysStr = days.ToString(CultureInfo.InvariantCulture);
 
                 var url = $"forecast?lat={latStr}&lon={lonStr}&appid={_apiKey}&units=metric";
 
